@@ -1,0 +1,296 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jana Modas | Atacado de Moda Feminina</title>
+    <!-- Tailwind CSS (HTTPS seguro para GitHub Pages) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full flex flex-col justify-between">
+
+    <!-- Modal de Alerta / Mensagem Personalizada -->
+    <div id="customModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+            <div id="modalIcon" class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl mb-4 mx-auto">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 id="modalTitle" class="text-lg font-bold text-center text-slate-900 mb-2">Aviso</h3>
+            <p id="modalMessage" class="text-slate-600 text-center mb-6">Mensagem vai aqui.</p>
+            <div class="flex justify-center">
+                <button onclick="closeModal()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 cursor-pointer">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topo / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('catalog')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    J
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Jana Modas</span>
+                    <span class="block text-xs font-medium text-slate-400 tracking-wider uppercase">Atacado Feminino</span>
+                </div>
+            </div>
+
+            <!-- Navegação Desktop -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <button onclick="switchTab('catalog')" id="nav-catalog" class="text-sm font-semibold text-rose-600 transition hover:text-rose-700 cursor-pointer">Catálogo Atacado</button>
+                <button onclick="switchTab('cart')" id="nav-cart" class="text-sm font-semibold text-slate-600 transition hover:text-rose-600 relative cursor-pointer">
+                    Carrinho
+                    <span id="cartBadge" class="absolute -top-2 -right-4 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
+                <button onclick="switchTab('seller')" id="nav-seller" class="text-sm font-semibold text-slate-600 transition hover:text-rose-600 flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg cursor-pointer">
+                    <i class="fa-solid fa-lock text-xs"></i> Painel Vendedor
+                </button>
+            </nav>
+
+            <!-- Ações Mobile / Ícones -->
+            <div class="flex md:hidden items-center space-x-3">
+                <button onclick="switchTab('cart')" class="p-2 text-slate-600 relative cursor-pointer">
+                    <i class="fa-solid fa-shopping-bag text-xl"></i>
+                    <span id="cartBadgeMobile" class="absolute top-0 right-0 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full hidden">0</span>
+                </button>
+                <button onclick="switchTab('seller')" class="p-2 text-slate-600 cursor-pointer">
+                    <i class="fa-solid fa-lock text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- AVISO DE ATACADO -->
+        <div class="bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl p-6 text-white mb-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold mb-1"><i class="fa-solid fa-tags mr-2"></i> Condição Especial de Atacado</h2>
+                <p class="text-rose-100 text-sm">Pedido mínimo de <strong class="text-white underline">12 peças</strong> (podem ser variadas entre todos os modelos, tamanhos e cores).</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 text-center">
+                <span class="block text-xs text-rose-100 uppercase font-semibold">Sua quantidade atual</span>
+                <span id="headerMinCount" class="text-xl font-black">0 / 12 pçs</span>
+            </div>
+        </div>
+
+        <!-- ABA 1: CATÁLOGO -->
+        <section id="tab-catalog" class="space-y-6">
+            <!-- Barra de Filtros e Pesquisa -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="w-full sm:w-72 relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar peças..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500 transition">
+                </div>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <button onclick="filterCategory('todos')" class="cat-btn bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm cursor-pointer">Todos</button>
+                    <button onclick="filterCategory('Pças Íntimas')" class="cat-btn bg-slate-100 text-slate-600 text-xs font-semibold px-4 py-2 rounded-xl transition hover:bg-slate-200 cursor-pointer">Peças Íntimas</button>
+                    <button onclick="filterCategory('Shorts')" class="cat-btn bg-slate-100 text-slate-600 text-xs font-semibold px-4 py-2 rounded-xl transition hover:bg-slate-200 cursor-pointer">Shorts</button>
+                    <button onclick="filterCategory('Calças')" class="cat-btn bg-slate-100 text-slate-600 text-xs font-semibold px-4 py-2 rounded-xl transition hover:bg-slate-200 cursor-pointer">Calças</button>
+                </div>
+            </div>
+
+            <!-- Grade de Produtos -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ABA 2: CARRINHO / CHECKOUT -->
+        <section id="tab-cart" class="hidden space-y-6">
+            <h2 class="text-2xl font-bold text-slate-900">Seu Carrinho de Atacado</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Lista de Itens -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Itens Selecionados</h3>
+                        <span id="cartItemsCount" class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">0 peças</span>
+                    </div>
+                    <div id="cartItemsList" class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+                        <!-- Itens do carrinho -->
+                    </div>
+                </div>
+
+                <!-- Resumo e Fechamento -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 h-fit space-y-6">
+                    <h3 class="font-bold text-slate-800 text-lg border-b border-slate-100 pb-4">Resumo do Pedido</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Quantidade Total:</span>
+                            <strong id="summaryQty" class="text-slate-900">0 peças</strong>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Status do Mínimo:</span>
+                            <span id="summaryMinStatus" class="font-semibold text-rose-600">Faltam 12 peças</span>
+                        </div>
+                        <div class="flex justify-between text-slate-800 text-base font-bold pt-2 border-t border-slate-100">
+                            <span>Valor Total:</span>
+                            <span id="summaryTotal" class="text-rose-600">R$ 0,00</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome da Cliente / Loja</label>
+                            <input type="text" id="clientName" placeholder="Ex: Boutique Bela Vista" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp de Contato</label>
+                            <input type="text" id="clientPhone" placeholder="(11) 99999-9999" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                        </div>
+                    </div>
+
+                    <button onclick="checkoutOrder()" id="checkoutBtn" disabled class="w-full bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl transition cursor-not-allowed">
+                        Finalizar Pedido Atacado
+                    </button>
+                    <p class="text-[11px] text-slate-400 text-center">O pedido será enviado para nossa equipe de atendimento e registrado no painel de vendas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: PAINEL DO VENDEDOR -->
+        <section id="tab-seller" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-3 py-1 rounded-full">Área Restrita</span>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">Painel de Vendas Jana Modas</h2>
+                    <p class="text-sm text-slate-500">Gere cobranças personalizadas e acompanhe o desempenho dos pedidos.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openNewChargeModal()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-plus"></i> Nova Cobrança
+                    </button>
+                    <button onclick="exportSalesData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm px-4 py-2.5 rounded-xl transition flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-download"></i> Exportar Dados
+                    </button>
+                </div>
+            </div>
+
+            <!-- Métricas Rápidas -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase">Total Faturado</span>
+                        <h3 id="statTotalRevenue" class="text-2xl font-bold text-slate-800">R$ 0,00</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase">Cobranças Geradas</span>
+                        <h3 id="statTotalCharges" class="text-2xl font-bold text-slate-800">0</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-check-double"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase">Pedidos Concluídos</span>
+                        <h3 id="statCompletedOrders" class="text-2xl font-bold text-slate-800">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Vendas e Cobranças -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-lg">Histórico de Cobranças e Vendas</h3>
+                    <div class="text-xs text-slate-400">Atualizado em tempo real</div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-400 text-xs uppercase font-semibold border-b border-slate-200">
+                                <th class="py-3 px-6">ID / Data</th>
+                                <th class="py-3 px-6">Cliente / Lojista</th>
+                                <th class="py-3 px-6">Descrição / Peças</th>
+                                <th class="py-3 px-6">Valor Total</th>
+                                <th class="py-3 px-6">Status</th>
+                                <th class="py-3 px-6 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal para Criar Nova Cobrança pelo Vendedor -->
+    <div id="chargeModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 text-lg">Gerar Nova Cobrança de Atacado</h3>
+                <button onclick="closeNewChargeModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Cliente / Lojista</label>
+                    <input type="text" id="chargeClient" placeholder="Ex: Carla Boutique" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição dos Produtos / Lote</label>
+                    <input type="text" id="chargeDesc" placeholder="Ex: Lote 15 peças variadas (Shorts e Calças)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Valor Total (R$)</label>
+                        <input type="number" id="chargeAmount" step="0.01" placeholder="450.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pagamento</label>
+                        <select id="chargePayment" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-500">
+                            <option value="PIX Atacado">PIX (5% desconto)</option>
+                            <option value="Cartão 3x">Cartão de Crédito 3x</option>
+                            <option value="Boleto 30 dias">Boleto Bancário (30 dias)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button onclick="closeNewChargeModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm hover:bg-slate-200 transition cursor-pointer">Cancelar</button>
+                <button onclick="createCharge()" class="px-5 py-2 bg-rose-600 text-white rounded-xl font-semibold text-sm hover:bg-rose-700 transition shadow-sm cursor-pointer">Gerar Link de Cobrança</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-400">
+        <p>&copy; 2026 Jana Modas Atacado Feminino. Todos os direitos reservados. Pedido mínimo de 12 peças.</p>
+    </footer>
+
+    <!-- Script da Aplicação -->
+    <script>
+        // Catálogo de Produtos Variados para Atacado Feminino (Sem Fotos, Nomes e Valores)
+        const products = [
+            { id: 1, name: "Calça Pantalona Alfaiataria Luxo", category: "Calças", price: 68.00 },
+            { id: 2, name: "Calça Jeans Skinny Cintura Alta Power", category: "Calças", price: 75.00 },
+            { id: 3, name: "Calça Flare Bengaline Confortável", category: "Calças", price: 59.90 },
+            { id: 4, name: "Calça Jogger Moletinho Casual", category: "Calças", price: 55.00 },
+            { id: 5, name: "Shorts Alfaiataria Com Cinto", category: "Shorts", price: 45.00 },
+            { id: 6, name: "Shorts Jeans Destroyed Hot Pants", category: "Short
